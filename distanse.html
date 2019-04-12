@@ -1,0 +1,89 @@
+<html>
+  <head>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+    integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+    crossorigin=""/>
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+      integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+      crossorigin=""></script>
+    <script src='leaflet-omnivore.min.js'></script>
+
+
+
+     <style type="text/css">
+     #map { height: 600px; }
+     </style>
+  </head>
+
+  <body>
+    <div id="map"></div>
+  </body>
+
+
+
+   <script type="text/javascript">
+   var nm = function(meter){
+     return Math.round((meter / 1852)*10)/10
+   }
+
+   var addNumber = function(p, number){
+     var icon = L.divIcon({html:"<div>"+number+"</div>"})
+     L.marker(p, {icon: icon}).addTo(map);
+   }
+
+
+   var calculateDistances = function(list){
+
+     for(var x in list){
+       var l = list[x];
+       var prev = null;
+       var dist = 0;
+       for(var i in l){
+         var curr = l[i]
+         if(prev !== null){
+           dist += prev.distanceTo(curr);
+           addNumber(curr, nm(dist));
+         }else{
+           console.log(curr.distanceTo(start))
+           if(curr.distanceTo(start) > 5000){
+             dist = curr.distanceTo(start);
+           }
+
+           addNumber(curr, nm(dist));
+         }
+         prev = curr;
+       }
+     }
+   };
+
+   var start = [61.138992781055336,6.7586517333984375];
+   var map = L.map('map').setView(start, 10);
+            L.tileLayer('https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}', {
+                attribution: '<a href="http://www.kartverket.no/">Kartverket</a>'
+            }).addTo(map);
+
+            var listLatLngs = []
+
+            var kml = omnivore.kml('l.kml')
+            .on('ready', function() {
+              this.eachLayer(function (layer) {
+                listLatLngs.push(layer.getLatLngs())
+              });
+
+
+
+              calculateDistances(listLatLngs);
+            })
+
+
+
+
+            var layer = kml.addTo(map);
+
+
+
+
+
+   </script>
+</html>

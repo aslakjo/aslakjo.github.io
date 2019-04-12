@@ -96,6 +96,48 @@
      }
    };
 
+   var addCircles= function(speed, list){
+     for(var i = speed; i <= speed*8; i = i+speed){
+       var circle = [];
+       var currSpeed = i;
+       for(var x in list){
+
+         var curr = list[x];
+         var found = false;
+         for(var y in curr){
+
+           if(nm(curr[y].dist) >= currSpeed && nm(curr[y].dist) < (currSpeed + 1) && found !== true){
+             circle.push(curr[y])
+             found = true;
+           }
+
+         }
+
+         for(var extra = 0; extra < 360; extra = extra + 90){
+           var newPoint = geolib.computeDestinationPoint({latitude:start[0], longitude:start[1]}, (i * 1852/1.2), extra)
+           circle.push(L.latLng(newPoint.latitude, newPoint.longitude));
+         }
+
+       }
+
+       var toL = function(p){
+         return {latitude:p.lat, longitude:p.lng};
+       }
+
+       var sort=function(a,b){
+         var ourStart = {latitude:start[0], longitude:start[1]}
+         return geolib.getBearing(ourStart, toL(a)) - geolib.getBearing(ourStart,toL(b));
+       }
+
+       var color = "darkgray";
+       if((i/speed) % 2 === 1){
+         color="gray"
+       }
+
+       L.polygon(circle.sort(sort), {lineCap:"round", lineJoin:"round", color: color}).addTo(map)
+     }
+   }
+
    var start = [61.1654081, 6.8207754];
    var map = L.map('map').setView(start, 10);
             L.tileLayer('https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}', {
@@ -119,6 +161,8 @@
                 calculateDistances(listLatLngs[i], listLatLngs);
               }
 
+              var speed =6;
+              addCircles(speed, listLatLngs);
             })
 
 

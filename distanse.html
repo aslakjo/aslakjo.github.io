@@ -8,6 +8,7 @@
       integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
       crossorigin=""></script>
     <script src='leaflet-omnivore.min.js'></script>
+    <script src='geolib.min.js'></script>
 
 
 
@@ -25,6 +26,25 @@
    <script type="text/javascript">
    var nm = function(meter){
      return Math.round((meter / 1852)*10)/10
+   }
+
+   var interpolate = function(latlngs, min = 1852){
+
+     for(var i =0 ; i < latlngs.length ; i++){
+       var curr = latlngs[i];
+       var last = latlngs[i-1];
+       if(i > 0){
+         if(last.distanceTo(curr) > min){
+           var bearing = geolib.getRhumbLineBearing(last, curr);
+           var additionalPoint = geolib.computeDestinationPoint(last, min, bearing);
+
+           latlngs.splice(i, 0, L.latLng(additionalPoint.latitude,  additionalPoint.longitude));
+
+           i = i-1;
+         }
+       }
+     }
+     return latlngs;
    }
 
    var addNumber = function(p, number){
@@ -68,9 +88,11 @@
             var kml = omnivore.kml('l.kml')
             .on('ready', function() {
               this.eachLayer(function (layer) {
-                listLatLngs.push(layer.getLatLngs())
+                var interpolated = interpolate(layer.getLatLngs())
+                L.polyline(interpolated).addTo(map);
+                listLatLngs.push(interpolated);
+                console.log(layer)
               });
-
 
 
               calculateDistances(listLatLngs);
@@ -79,7 +101,7 @@
 
 
 
-            var layer = kml.addTo(map);
+            //var layer = kml.addTo(map);
 
 
 

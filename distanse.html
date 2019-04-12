@@ -25,7 +25,7 @@
 
    <script type="text/javascript">
    var nm = function(meter){
-     return Math.round((meter / 1852)*10)/10
+     return Math.round((meter / 1852)*10)/10;
    }
 
    var interpolate = function(latlngs, min = 1852){
@@ -52,32 +52,51 @@
      L.marker(p, {icon: icon}).addTo(map);
    }
 
+   var findClosestPoint =function(point, search){
+     var min = 1000000000;
+     var minPoint = undefined;
+     for(var i in search){
+       var list = search[i];
+       for(var x in list){
+         var curr = list[x];
 
-   var calculateDistances = function(list){
-
-     for(var x in list){
-       var l = list[x];
-       var prev = null;
-       var dist = 0;
-       for(var i in l){
-         var curr = l[i]
-         if(prev !== null){
-           dist += prev.distanceTo(curr);
-           addNumber(curr, nm(dist));
-         }else{
-           console.log(curr.distanceTo(start))
-           if(curr.distanceTo(start) > 5000){
-             dist = curr.distanceTo(start);
-           }
-
-           addNumber(curr, nm(dist));
+         if(curr.distanceTo(point) < min && curr.distanceTo(point) > 0){
+           min = curr.distanceTo(point);
+           minPoint = curr;
+           //console.log("new closest point", minPoint)
          }
-         prev = curr;
        }
+     }
+
+     return minPoint;
+   }
+
+   var calculateDistances = function(list, search){
+
+     var l = list;
+     var prev = null;
+     var dist = 0;
+     for(var i in l){
+       var curr = l[i]
+       if(prev !== null){
+         dist += prev.distanceTo(curr);
+       }else{
+         console.log(curr.distanceTo(start))
+         if(curr.distanceTo(start) > 1000){
+           minPoint = findClosestPoint(curr, search)
+           console.log(minPoint)
+           dist = curr.distanceTo(minPoint) +  minPoint.dist;
+         }
+       }
+
+      curr.dist = dist;
+      addNumber(curr, nm(dist));
+       prev = curr;
+
      }
    };
 
-   var start = [61.138992781055336,6.7586517333984375];
+   var start = [61.1654081, 6.8207754];
    var map = L.map('map').setView(start, 10);
             L.tileLayer('https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}', {
                 attribution: '<a href="http://www.kartverket.no/">Kartverket</a>'
@@ -91,11 +110,15 @@
                 var interpolated = interpolate(layer.getLatLngs())
                 L.polyline(interpolated).addTo(map);
                 listLatLngs.push(interpolated);
-                console.log(layer)
               });
 
+              for(var i in listLatLngs){
+                calculateDistances(listLatLngs[i], listLatLngs);
+              }
+              for(var i in listLatLngs){
+                calculateDistances(listLatLngs[i], listLatLngs);
+              }
 
-              calculateDistances(listLatLngs);
             })
 
 

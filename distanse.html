@@ -28,7 +28,7 @@
      return Math.round((meter / 1852)*10)/10;
    }
 
-   var interpolate = function(latlngs, min = 1852){
+   var interpolate = function(latlngs, min = 185){
 
      for(var i =0 ; i < latlngs.length ; i++){
        var curr = latlngs[i];
@@ -84,21 +84,25 @@
          console.log(curr.distanceTo(start))
          if(curr.distanceTo(start) > 1000){
            minPoint = findClosestPoint(curr, search)
-           console.log(minPoint)
+           console.log("closest", minPoint)
            dist = curr.distanceTo(minPoint) +  minPoint.dist;
          }
        }
 
       curr.dist = dist;
-      addNumber(curr, nm(dist));
-       prev = curr;
 
-     }
+      if((nm(dist) % 1 ) < .01){
+        addNumber(curr, nm(dist));
+       }
+       prev = curr;
+      }
+
    };
 
    var addCircles= function(speed, list){
      var circles = [];
-     for(var i = speed; i <= speed*8; i = i+speed){
+     var times = Math.round(45 / speed);
+     for(var i = speed; i <= speed*times; i = i+speed){
        var circle = [];
        circles[i] = circle;
        var currSpeed = i;
@@ -118,10 +122,11 @@
          var factor = function(deg){
            if(deg == 50) return 1.6;
            if(deg == 350) return 1.5;
+           if(deg == 100) return 1.1;
            if(deg == 150) return 1.1;
            if(deg == 200) return 1.3;
            if(deg == 250) return 1.2;
-           if(deg == 300) return 1.6;
+           if(deg == 300) return 1.3;
            return 1.4
          }
          for(var extra = 0; extra < 360; extra = extra + 50){
@@ -142,8 +147,12 @@
        }
 
        var color = "darkgray";
+       var fillColor ="none"
+       var fill = false;
        if((i/speed) % 2 === 1){
          color="gray"
+         fillColor = "lightgray"
+         fill = true;
        }
 
        var hole = [];
@@ -152,7 +161,7 @@
          hole = circles[i-speed];
        }
        console.log(hole)
-       L.polygon([circle.sort(sort) , hole.sort(sort)], {lineCap:"round", lineJoin:"round", color: color}).addTo(map)
+       L.polygon([circle.sort(sort) , hole.sort(sort)], {lineCap:"round", lineJoin:"round", color: color, fill:fill, fillColor: fillColor,fillOpacity:0.5}).addTo(map)
      }
    }
 
@@ -172,14 +181,13 @@
                 listLatLngs.push(interpolated);
               });
 
-              for(var i in listLatLngs){
-                calculateDistances(listLatLngs[i], listLatLngs);
-              }
-              for(var i in listLatLngs){
-                calculateDistances(listLatLngs[i], listLatLngs);
+              for(var x = 0 ; x < 5; x++){
+                for(var i in listLatLngs){
+                  calculateDistances(listLatLngs[i], listLatLngs);
+                }
               }
 
-              var speed =6;
+              var speed =7;
               addCircles(speed, listLatLngs);
             })
 

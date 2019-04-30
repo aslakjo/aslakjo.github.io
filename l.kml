@@ -206,9 +206,7 @@
             6.6025295,61.1935707,0
             6.5819302,61.2117629,0
             6.5695706,61.2395269,0
-            6.5606442,61.2619847,0
-            6.5572109,61.2897044,0
-            6.5578976,61.2992687,0
+            6.5675106,61.2453145,0
           </coordinates>
         </LineString>
       </Placemark>
@@ -601,6 +599,18 @@
             7.5212792,61.4561235,0
             7.5810174,61.4797378,0
             7.5926904,61.4918659,0
+          </coordinates>
+        </LineString>
+      </Placemark>
+      <Placemark>
+        <name>Linje 44</name>
+        <styleUrl>#line-000000-1200-nodesc</styleUrl>
+        <LineString>
+          <tessellate>1</tessellate>
+          <coordinates>
+            6.5675106,61.2453145,0
+            6.5567404,61.2689658,0
+            6.5588003,61.3003068,0
           </coordinates>
         </LineString>
       </Placemark>

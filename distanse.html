@@ -47,14 +47,25 @@
      return latlngs;
    }
 
-   var addNumber = function(p, number){
-     var icon = L.divIcon({html:"<div>"+number+"</div>"})
-     L.marker(p, {icon: icon}).addTo(map);
+   var centerTo = function(point){
+     for(var i in objects){
+       objects[i].remove()
+     }
+     listLatLngs.flatMap(function(o){return o}).forEach(function(o){delete o.dist})
+
+     drawGraphics(point, speed, listLatLngs, objects)
    }
 
-  
+   var addNumber = function(p, number, objects){
+     var icon = L.divIcon({html:"<div>"+number+"</div>"})
+     var marker = L.marker(p, {icon: icon})
+     marker.addTo(map).on('click', function(){centerTo(p)});
+     objects.push(marker)
+   }
 
-   var addCircles= function(speed, list){
+
+
+   var addCircles= function(start, speed, list, objects){
      var circles = [];
      var times = Math.round(45 / speed);
      for(var i = speed; i <= speed*times; i = i+speed){
@@ -86,7 +97,7 @@
          }
          for(var extra = 0; extra < 360; extra = extra + 50){
 
-           var newPoint = geolib.computeDestinationPoint({latitude:start[0], longitude:start[1]}, (i * 1852/ factor(extra)), extra)
+           var newPoint = geolib.computeDestinationPoint(start, (i * 1852/ factor(extra)), extra)
            circle.push(L.latLng(newPoint.latitude, newPoint.longitude));
          }
 
@@ -97,8 +108,8 @@
        }
 
        var sort=function(a,b){
-         var ourStart = {latitude:start[0], longitude:start[1]}
-         return geolib.getBearing(ourStart, toL(a)) - geolib.getBearing(ourStart,toL(b));
+
+         return geolib.getBearing(start, toL(a)) - geolib.getBearing(start,toL(b));
        }
 
        var color = "darkgray";
@@ -111,12 +122,13 @@
        }
 
        var hole = [];
-       console.log(circles)
+
        if(i > speed){
          hole = circles[i-speed];
        }
-       console.log(hole)
-       L.polygon([circle.sort(sort) , hole.sort(sort)], {lineCap:"round", lineJoin:"round", color: color, fill:fill, fillColor: fillColor,fillOpacity:0.5}).addTo(map)
+       var poligon = L.polygon([circle.sort(sort) , hole.sort(sort)], {lineCap:"round", lineJoin:"round", color: color, fill:fill, fillColor: fillColor,fillOpacity:0.5})
+       poligon.addTo(map)
+       objects.push(poligon);
      }
    }
 
@@ -191,7 +203,7 @@
      }
 
 
-      var closest = closestSegments(L.latLng(start[0], start[1]), allSegments);
+      var closest = closestSegments(start, allSegments);
       for(var i in closest){
         var curr = closest[i][0];
         curr.dist = curr.distanceTo(start)
@@ -204,13 +216,31 @@
 
    };
 
+   var drawGraphics = function(start, speed, listLatLngs, objects){
+     distancesToAllPoints(start, listLatLngs);
+
+     for(var i in listLatLngs){
+       for(var p in listLatLngs[i]){
+         var curr = listLatLngs[i][p];
+         if((nm(curr.dist) % 1 ) < .001){
+           addNumber(curr, nm(curr.dist), objects);
+         }
+       }
+     }
+
+     addCircles(start, speed, listLatLngs, objects);
+   }
+
    var start = [61.1557771,7.2482669]//[61.1654081, 6.8207754];
+
+   var listLatLngs = [];
+   var speed = 7;
+   var objects = [];
    var map = L.map('map').setView(start, 10);
             L.tileLayer('https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}', {
                 attribution: '<a href="http://www.kartverket.no/">Kartverket</a>'
             }).addTo(map);
 
-            var listLatLngs = []
 
             var kml = omnivore.kml('l.kml')
             .on('ready', function() {
@@ -223,21 +253,9 @@
               });
 
 
+              drawGraphics(L.latLng(start[0], start[1]), speed, listLatLngs, objects);
 
 
-              distancesToAllPoints(start, listLatLngs);
-
-              for(var i in listLatLngs){
-                for(var p in listLatLngs[i]){
-                  var curr = listLatLngs[i][p];
-                  if((nm(curr.dist) % 1 ) < .001){
-                    addNumber(curr, nm(curr.dist));
-                  }
-                }
-              }
-
-              var speed =7;
-              addCircles(speed, listLatLngs);
             })
 
 

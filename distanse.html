@@ -13,7 +13,36 @@
 
 
      <style type="text/css">
-     #map { height: 600px; }
+       #map { height: 600px; }
+       .start {
+         border: green;
+         font-weight: bolder;
+         color:green;
+       }
+
+       .leaflet-marker-icon{
+          text-align: center ;
+          padding:3px;
+          margin-left: -10px !important;
+          margin-top: -10px !important;
+          line-height: 1.2 ;
+          border-radius: 50%;
+       }
+
+       .hour-0{color: blue}
+       .hour-1{color: green}
+       .hour-2{color: darkred}
+       .hour-3{color: brown}
+       .hour-4{color: orange}
+       .hour-5{color: red}
+       .hour-6{color: pink}
+       .hour-7{color: indigo}
+       .hour-8{color: darkgreen}
+       .hour-9{color: yellow}
+       .hour-10{color: black}
+
+
+
      </style>
   </head>
 
@@ -78,7 +107,16 @@
    }
 
    var addNumber = function(p, number, objects){
-     var icon = L.divIcon({html:"<div>"+number+"</div>"})
+     var zero = ""
+     if(number == 0){
+       zero =zero + " start"
+     }
+
+     zero = zero + " hour-" + Math.round(number / speed)
+
+
+
+     var icon = L.divIcon({html:"<div class='"+ zero +"'>"+number+"</div>"})
      var marker = L.marker(p, {icon: icon})
      marker.addTo(map).on('click', function(){centerTo(p)});
      objects.push(marker)
@@ -250,7 +288,7 @@
        }
      }
 
-     addCircles(start, speed, listLatLngs, objects);
+     //addCircles(start, speed, listLatLngs, objects);
    }
 
    var start = [61.1557771,7.2482669]//[61.1654081, 6.8207754];

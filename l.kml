@@ -48,20 +48,6 @@
         </LineString>
       </Placemark>
       <Placemark>
-        <name>Linje 2</name>
-        <styleUrl>#line-000000-1200-nodesc</styleUrl>
-        <LineString>
-          <tessellate>1</tessellate>
-          <coordinates>
-            5.8398511,61.1434535,0
-            5.8331562,61.1110205,0
-            5.8290364,61.0894509,0
-            5.8214833,61.0781624,0
-            5.8050038,61.0701917,0
-          </coordinates>
-        </LineString>
-      </Placemark>
-      <Placemark>
         <name>Linje 3</name>
         <styleUrl>#line-000000-1200-nodesc</styleUrl>
         <LineString>
@@ -155,8 +141,6 @@
             6.4126182,61.0401228,0
             6.3961387,61.0271538,0
             6.3947655,61.0191702,0
-            6.3851524,61.0148449,0
-            6.3576866,61.0081895,0
           </coordinates>
         </LineString>
       </Placemark>
@@ -226,27 +210,6 @@
             6.7474117,61.3893325,0
             6.750845,61.4116831,0
             6.7542782,61.4162828,0
-          </coordinates>
-        </LineString>
-      </Placemark>
-      <Placemark>
-        <name>Linje 15</name>
-        <styleUrl>#line-000000-1200-nodesc</styleUrl>
-        <LineString>
-          <tessellate>1</tessellate>
-          <coordinates>
-            6.8889432,61.1506782,0
-            6.9685941,61.1569725,0
-            6.99194,61.1549849,0
-            7.0008664,61.1579662,0
-            7.024899,61.1791581,0
-            7.0448117,61.1940502,0
-            7.0736508,61.2009974,0
-            7.1066098,61.2122421,0
-            7.1155362,61.2291015,0
-            7.1224027,61.2357106,0
-            7.1320157,61.2515667,0
-            7.1636014,61.2575106,0
           </coordinates>
         </LineString>
       </Placemark>
@@ -611,6 +574,77 @@
             6.5675106,61.2453145,0
             6.5567404,61.2689658,0
             6.5588003,61.3003068,0
+          </coordinates>
+        </LineString>
+      </Placemark>
+      <Placemark>
+        <name>Linje 15</name>
+        <styleUrl>#line-000000-1200-nodesc</styleUrl>
+        <LineString>
+          <tessellate>1</tessellate>
+          <coordinates>
+            6.8889432,61.1506782,0
+            6.9685941,61.1569725,0
+            6.99194,61.1549849,0
+            7.0008664,61.1579662,0
+            7.024899,61.1791581,0
+            7.0448117,61.1940502,0
+            7.0736508,61.2009974,0
+            7.088757,61.2062895,0
+          </coordinates>
+        </LineString>
+      </Placemark>
+      <Placemark>
+        <name>Linje 45</name>
+        <styleUrl>#line-000000-1200-nodesc</styleUrl>
+        <LineString>
+          <tessellate>1</tessellate>
+          <coordinates>
+            7.088757,61.2062895,0
+            7.1105101,61.2135121,0
+            7.1187499,61.2293794,0
+            7.1249297,61.2353275,0
+            7.1311095,61.2472205,0
+            7.1345427,61.2511838,0
+            7.1654418,61.2577883,0
+            7.1661284,61.2650516,0
+          </coordinates>
+        </LineString>
+      </Placemark>
+      <Placemark>
+        <name>Linje 46</name>
+        <styleUrl>#line-000000-1200-nodesc</styleUrl>
+        <LineString>
+          <tessellate>1</tessellate>
+          <coordinates>
+            6.3947655,61.0191702,0
+            6.3864675,61.0146962,0
+            6.3651815,61.0110358,0
+            6.3576284,61.0053781,0
+          </coordinates>
+        </LineString>
+      </Placemark>
+      <Placemark>
+        <name>Linje 2</name>
+        <styleUrl>#line-000000-1200-nodesc</styleUrl>
+        <LineString>
+          <tessellate>1</tessellate>
+          <coordinates>
+            5.8331562,61.1110205,0
+            5.8290364,61.0894509,0
+            5.8214833,61.0781624,0
+            5.8050038,61.0701917,0
+          </coordinates>
+        </LineString>
+      </Placemark>
+      <Placemark>
+        <name>Linje 47</name>
+        <styleUrl>#line-000000-1200-nodesc</styleUrl>
+        <LineString>
+          <tessellate>1</tessellate>
+          <coordinates>
+            5.8398511,61.1434535,0
+            5.8331562,61.1110205,0
           </coordinates>
         </LineString>
       </Placemark>

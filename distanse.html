@@ -53,16 +53,20 @@
    }
 
    var findClosestPoint =function(point, search){
+
      var min = 1000000000;
      var minPoint = undefined;
+     var minList = undefined;
      for(var i in search){
        var list = search[i];
        for(var x in list){
          var curr = list[x];
 
          if(curr.distanceTo(point) < min && curr.distanceTo(point) > 0){
+
            min = curr.distanceTo(point);
            minPoint = curr;
+           minList = list;
            //console.log("new closest point", minPoint)
          }
        }
@@ -73,6 +77,7 @@
 
    var calculateDistances = function(list, search){
 
+
      var l = list;
      var prev = null;
      var dist = 0;
@@ -82,10 +87,11 @@
          dist += prev.distanceTo(curr);
        }else{
          console.log(curr.distanceTo(start))
-         if(curr.distanceTo(start) > 1000){
+         if(curr.distanceTo(start) > 500){
            minPoint = findClosestPoint(curr, search)
-           console.log("closest", minPoint)
            dist = curr.distanceTo(minPoint) +  minPoint.dist;
+         }else{
+           dist = 0
          }
        }
 
@@ -165,7 +171,71 @@
      }
    }
 
-   var start = [61.1654081, 6.8207754];
+   var distancesToAllPoints = function(start, list){
+     var points = list.flatMap(function(o){return o;});
+
+     var closestTo = function(candidate, search){
+       return search.reduce(function(min, next){
+         var currentValue =  next.distanceTo(candidate)
+         var minValue = min.distanceTo(candidate)
+         if(minValue < currentValue)
+          return min;
+         else
+           return next;
+       })
+     }
+
+     var someAreMissingDist = function(list){
+       for(var i in list){
+         if(list[i].dist === undefined)
+          return true;
+       }
+
+       return false;
+     }
+     var withDistDefined = function(list){
+       return list.filter(function(c) {return c.dist !== undefined})
+     }
+
+     var closestPointWithDist = function(candidate, list){
+       var withDist = withDistDefined(list)
+       var closest = closestTo(candidate, withDist);
+       return closest
+     }
+
+     var firstWithoutDist = function(list){
+       for(var i in list){
+         if(list[i].dist === undefined)
+          return list[i]
+       }
+
+       return undefined;
+     }
+
+     var byDistanceTo = function(start){return function(a,b){
+       return a.distanceTo(start) - b.distanceTo(start)
+     }}
+
+     var minPoint = closestTo(start, points);
+     minPoint.dist = minPoint.distanceTo(start);
+
+     var inOrder = points.sort(byDistanceTo(start))
+
+     while(someAreMissingDist(inOrder)){
+
+       //første enden som er nærmest, som ikke har dist (husk å reversere alle linjene)
+       //når linjen er ferdig fin nærmeste ende som ikke har dist, og gjenta til det er langt fra enden til neste start.
+       //fortsett over til alle har dist.
+
+        var currPoint = firstWithoutDist(inOrder) her må vi følge linjene ikke luftlinje
+        var closestPoint = closestPointWithDist(currPoint, inOrder);
+
+        currPoint.dist = closestPoint.distanceTo(currPoint) + closestPoint.dist;
+     }
+
+   };
+
+   var start = [61.1418612,7.3347842]//[61.1654081, 6.8207754];
    var map = L.map('map').setView(start, 10);
             L.tileLayer('https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}', {
                 attribution: '<a href="http://www.kartverket.no/">Kartverket</a>'
@@ -176,16 +246,43 @@
             var kml = omnivore.kml('l.kml')
             .on('ready', function() {
               this.eachLayer(function (layer) {
+                console.log("orginal", layer.getLatLngs().length);
                 var interpolated = interpolate(layer.getLatLngs())
+                console.log("points", interpolated.length)
                 L.polyline(interpolated).addTo(map);
                 listLatLngs.push(interpolated);
               });
 
-              for(var x = 0 ; x < 5; x++){
+
+/*
+
+              var startPoints = {}
+              for(var list in listLatLngs){
+                for(var point in listLatLngs[list]){
+                  if(listLatLngs[list][point].distanceTo(start) < 5000){
+                    if(startPoints[list] === undefined){
+                      startPoints[list] = []
+                    }
+                    startPoints[list].push(listLatLngs[list][point])
+                  }
+                }
+              }
+*/
+              distancesToAllPoints(start, listLatLngs);
+
+              for(var i in listLatLngs){
+                for(var p in listLatLngs[i]){
+                  var curr = listLatLngs[i][p];
+                  if((nm(curr.dist) % 1 ) < .01){
+                    addNumber(curr, nm(curr.dist));
+                  }
+                }
+              }
+              /*for(var x = 0 ; x < 10; x++){
                 for(var i in listLatLngs){
                   calculateDistances(listLatLngs[i], listLatLngs);
                 }
-              }
+              }*/
 
               var speed =7;
               addCircles(speed, listLatLngs);

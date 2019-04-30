@@ -216,26 +216,83 @@
        return a.distanceTo(start) - b.distanceTo(start)
      }}
 
-     var minPoint = closestTo(start, points);
-     minPoint.dist = minPoint.distanceTo(start);
+     var closestSegments = function(point, search){
 
-     var inOrder = points.sort(byDistanceTo(start))
+       var sortedStartPoints = search.map(function(o){return o[0]}).sort(byDistanceTo(point));
 
-     while(someAreMissingDist(inOrder)){
+       var closestDistance = point.distanceTo(sortedStartPoints[0])
+       console.log("closest distance is " , closestDistance)
+       if(closestDistance > 10){
+         return [];
+       }
+
+
+       var closest = search.filter(function(o) { return o[0].distanceTo(point) <= closestDistance })
+       return closest;
+
+     }
+
+     var addDistToSegment = function(dist, segment, search){
+       console.log("add dist segment", dist, segment,search)
+       //make sure not to go backwards. ie. do not add dist to a distance that we have covered
+       //[1], since bootstrap is to set the first distances on the first segments
+       if(segment[1].dist !== undefined)
+        return;
+       var prev = undefined;
+       var currDist = dist;
+       for(var i in segment){
+         var curr = segment[i];
+         if(prev === undefined){
+           curr.dist = currDist;
+         }else{
+          currDist  = prev.distanceTo(curr) + currDist;
+          curr.dist = currDist;
+         }
+         prev = curr;
+       }
+
+
+       var nextSegments = closestSegments(segment[segment.length-1], search)
+       console.log("next segments" , nextSegments.length)
+       for(var i in nextSegments){
+         addDistToSegment(currDist, nextSegments[i], search.filter(function(o){return o[0].dist === undefined}))
+       }
+     }
+
+
+
+     var allSegments = [];
+     for(var i in list){
+       allSegments.push(list[i]);
+       allSegments.push(list[i].slice().reverse());
+     }
+
+
+
 
        //første enden som er nærmest, som ikke har dist (husk å reversere alle linjene)
        //når linjen er ferdig fin nærmeste ende som ikke har dist, og gjenta til det er langt fra enden til neste start.
        //fortsett over til alle har dist.
 
-        var currPoint = firstWithoutDist(inOrder) her må vi følge linjene ikke luftlinje
-        var closestPoint = closestPointWithDist(currPoint, inOrder);
+      var closest = closestSegments(L.latLng(start[0], start[1]), allSegments);
+      for(var i in closest){
+        var curr = closest[i][0];
+        curr.dist = curr.distanceTo(start)
+      }
+      console.log("all closeses", closest)
+      for(var i in closest){
+         addDistToSegment(closest[i][0].dist, closest[i],allSegments)
+      }
 
-        currPoint.dist = closestPoint.distanceTo(currPoint) + closestPoint.dist;
-     }
+      //  var currPoint = firstWithoutDist(inOrder)
+      //  var closestPoint = closestPointWithDist(currPoint, inOrder);
+
+      //  currPoint.dist = closestPoint.distanceTo(currPoint) + closestPoint.dist;
+
 
    };
 
-   var start = [61.1418612,7.3347842]//[61.1654081, 6.8207754];
+   var start = [61.1557771,7.2482669]//[61.1654081, 6.8207754];
    var map = L.map('map').setView(start, 10);
             L.tileLayer('https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}', {
                 attribution: '<a href="http://www.kartverket.no/">Kartverket</a>'

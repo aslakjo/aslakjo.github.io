@@ -53,6 +53,27 @@
      }
      listLatLngs.flatMap(function(o){return o}).forEach(function(o){delete o.dist})
 
+     var containingSegments = [];
+     for(var i in listLatLngs){
+       var segment = listLatLngs[i];
+       for(var p in segment){
+         if(segment[p] === point){
+           containingSegments.push(segment)
+         }
+       }
+     }
+
+     for(var i in containingSegments){
+       var segment = containingSegments[i]
+       listLatLngs.splice(listLatLngs.indexOf(segment), 1)
+       var a  = segment.slice(0,segment.indexOf(point))
+       a.push(point)
+       var b = segment.slice(segment.indexOf(point))
+       console.log("slice", a,b)
+       listLatLngs.push(a)
+       listLatLngs.push(b)
+     }
+
      drawGraphics(point, speed, listLatLngs, objects)
    }
 
@@ -198,8 +219,9 @@
 
      var allSegments = [];
      for(var i in list){
-       allSegments.push(list[i]);
-       allSegments.push(list[i].slice().reverse());
+       var l = list[i]
+       allSegments.push(l);
+       allSegments.push(l.slice().reverse());
      }
 
 

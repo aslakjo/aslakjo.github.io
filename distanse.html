@@ -15,7 +15,14 @@
 
 
      <style type="text/css">
-       #map { height: 600px; }
+     body{
+       margin:0;
+     }
+       #map {
+         height: 100%;
+         margin: 0;
+         padding: 0;
+       }
        .start {
          border: green;
          font-weight: bolder;
@@ -23,25 +30,57 @@
        }
 
        .leaflet-marker-icon{
-          text-align: center ;
-          padding:3px;
-          margin-left: -10px !important;
-          margin-top: -10px !important;
-          line-height: 1.2 ;
-          border-radius: 50%;
+          background:none;
+          border:none;
        }
 
-       .hour-0{color: blue}
-       .hour-1{color: green}
-       .hour-2{color: darkred}
-       .hour-3{color: brown}
-       .hour-4{color: orange}
-       .hour-5{color: red}
-       .hour-6{color: pink}
-       .hour-7{color: indigo}
-       .hour-8{color: darkgreen}
-       .hour-9{color: yellow}
-       .hour-10{color: black}
+       .number {
+         text-align: center ;
+         padding:3px;
+         margin-left: -10px !important;
+         margin-top: -10px !important;
+         line-height: 1.2 ;
+         border-radius: 50%;
+         background:white;
+         border:none;
+         color: #ccc
+       }
+
+       #legend{
+         position: absolute;
+         margin-left: auto;
+         margin-right: auto;
+         left: 0;
+         right: 0;
+         bottom:0px;
+         width: 480px;
+         background: white;
+         z-index: 1000;
+         padding:10px;
+         margin-bottom: -10px;
+         padding-bottom: 0;
+
+         border-top-left-radius: 10px;
+         border-top-right-radius: 10px;
+       }
+       #legend .number{
+         display:inline-block;
+         width: 20px;
+         margin: 15px;
+
+       }
+
+       .hour-0{background-color: blue}
+       .hour-1{background-color: green}
+       .hour-2{background-color: darkred}
+       .hour-3{background-color: brown}
+       .hour-4{background-color: orange}
+       .hour-5{background-color: red}
+       .hour-6{background-color: white}
+       .hour-7{background-color: indigo}
+       .hour-8{background-color: darkgreen}
+       .hour-9{background-color: yellow}
+       .hour-10{background-color: black}
 
        #controlls{
          position:absolute;
@@ -70,6 +109,22 @@
     <div id="controlls">
         <div id="range"></div>
     </div>
+    <div id="legend">
+      Timer kj&oslash;ring:
+      <div class="hour-0 number">0</div>
+      <div class="hour-1 number">1</div>
+      <div class="hour-2 number">2</div>
+      <div class="hour-3 number">3</div>
+      <div class="hour-4 number">4</div>
+      <div class="hour-5 number">5</div>
+      <div class="hour-6 number">6</div>
+      <div class="hour-7 number">7</div>
+      <div class="hour-8 number">8</div>
+      <div class="hour-9 number">9</div>
+      <div class="hour-10 number">10</div>
+    </div>
+
+
   </body>
 
 
@@ -138,7 +193,7 @@
 
 
 
-     var icon = L.divIcon({html:"<div class='"+ zero +"'>"+number+"</div>"})
+     var icon = L.divIcon({html:"<div class='number "+ zero +"'>"+number+"</div>"})
      var marker = L.marker(p, {icon: icon})
      marker.addTo(map).on('click', function(){centerTo(p)});
      objects.push(marker)

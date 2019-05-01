@@ -9,6 +9,8 @@
       crossorigin=""></script>
     <script src='leaflet-omnivore.min.js'></script>
     <script src='geolib.min.js'></script>
+    <script src="nouislider.min.js"></script>
+
 
 
 
@@ -41,13 +43,33 @@
        .hour-9{color: yellow}
        .hour-10{color: black}
 
+       #controlls{
+         position:absolute;
+         top: 0;
+         margin-left: auto;
+          margin-right: auto;
+          left: 0;
+          right: 0;
 
+         padding: 20px;
+         padding-top:50px;
+         border-bottom-left-radius: 10px;
+         border-bottom-right-radius: 10px;
+         z-index:1000;
+         width: 300px;
+         height: 50px;
+         background: white;
+       }
 
      </style>
+     <link rel="stylesheet" type="text/css" href="nouislider.min.css">
   </head>
 
   <body>
     <div id="map"></div>
+    <div id="controlls">
+        <div id="range"></div>
+    </div>
   </body>
 
 
@@ -102,7 +124,7 @@
        listLatLngs.push(a)
        listLatLngs.push(b)
      }
-
+     lastPoint = point
      drawGraphics(point, speed, listLatLngs, objects)
    }
 
@@ -112,7 +134,7 @@
        zero =zero + " start"
      }
 
-     zero = zero + " hour-" + Math.round(number / speed)
+     zero = zero + " hour-" + Math.floor(number / speed)
 
 
 
@@ -292,31 +314,71 @@
    }
 
    var start = [61.1557771,7.2482669]//[61.1654081, 6.8207754];
-
+   var lastPoint = L.latLng(start[0], start[1])
    var listLatLngs = [];
    var speed = 7;
    var objects = [];
    var map = L.map('map').setView(start, 10);
-            L.tileLayer('https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}', {
-                attribution: '<a href="http://www.kartverket.no/">Kartverket</a>'
-            }).addTo(map);
+    L.tileLayer('https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}', {
+        attribution: '<a href="http://www.kartverket.no/">Kartverket</a>'
+    }).addTo(map);
 
 
-            var kml = omnivore.kml('l.kml')
-            .on('ready', function() {
-              this.eachLayer(function (layer) {
-                console.log("orginal", layer.getLatLngs().length);
-                var interpolated = interpolate(layer.getLatLngs())
-                console.log("points", interpolated.length)
-                L.polyline(interpolated).addTo(map);
-                listLatLngs.push(interpolated);
-              });
+    var kml = omnivore.kml('l.kml')
+    .on('ready', function() {
+      this.eachLayer(function (layer) {
+        console.log("orginal", layer.getLatLngs().length);
+        var interpolated = interpolate(layer.getLatLngs())
+        console.log("points", interpolated.length)
+        L.polyline(interpolated).addTo(map);
+        listLatLngs.push(interpolated);
+      });
 
 
-              drawGraphics(L.latLng(start[0], start[1]), speed, listLatLngs, objects);
+      drawGraphics(lastPoint, speed, listLatLngs, objects);
 
 
-            })
+    })
+
+    var elem = document.getElementById("range");
+    /*elem.onchange = function(event){
+      speed = event.target.value;
+      drawGraphics(lastPoint, speed, listLatLngs, objects)
+    }*/
+
+    noUiSlider.create(elem, {
+      start: 7,
+      step:1,
+      tooltips: [{to:function(value){return parseInt(value) + " knop"}}],
+      range: {
+          'min': 0,
+          'max': 50
+      },
+      pips: {
+        mode: 'values',
+        values: [4,7,20,25,35,43],
+        density: 5
+    }
+    });
+
+    var pips = elem.querySelectorAll('.noUi-value');
+
+    function clickOnPip() {
+        var value = Number(this.getAttribute('data-value'));
+        elem.noUiSlider.set(value);
+
+    }
+
+    for (var i = 0; i < pips.length; i++) {
+        pips[i].addEventListener('click', clickOnPip);
+    }
+
+    var  updateSpeed= function(values, handle){
+      speed = values[0];
+      drawGraphics(lastPoint, speed, listLatLngs, objects)
+    }
+    elem.noUiSlider.on('change',updateSpeed)
+    elem.noUiSlider.on('set',updateSpeed)
 
 
 
@@ -326,6 +388,7 @@
 
 
 
-
    </script>
+
+
 </html>

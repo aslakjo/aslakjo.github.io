@@ -103,6 +103,20 @@
          background: white;
        }
 
+       .number .tooltip{
+         display:none;
+         position:absolute;
+         top: -50px;
+         background: white;
+         padding: 4px;
+         border-radius: 5px;
+         color:black;
+
+       }
+       .number:hover .tooltip{
+          display:block;
+       }
+
      </style>
      <link rel="stylesheet" type="text/css" href="nouislider.min.css">
   </head>
@@ -166,7 +180,7 @@
      for(var i in listLatLngs){
        var segment = listLatLngs[i];
        for(var p in segment){
-         if(segment[p] === point){
+         if(segment[p] == point){
            containingSegments.push(segment)
          }
        }
@@ -194,11 +208,21 @@
 
      zero = zero + " hour-" + Math.floor(number / speed)
 
+     function zeroPad(num, places) {
+       var zero = places - num.toString().length + 1;
+       return Array(+(zero > 0 && zero)).join("0") + num;
+     }
+
+     var hour = Math.floor(number / speed)
+     var fraction = (number / speed) % 1
+     var minutes = Math.round(60 * fraction)
+     var time = "" + hour + ":" + zeroPad(minutes,2);
 
 
-     var icon = L.divIcon({html:"<div class='number "+ zero +"'>"+number+"</div>"})
+
+     var icon = L.divIcon({html:"<div class='number "+ zero +"' >"+number+" <div class='tooltip'>"+time+"</div></div>"})
      var marker = L.marker(p, {icon: icon})
-     marker.addTo(map).on('click', function(){centerTo(p)});
+     marker.addTo(map).on('click', function(){console.log(p);centerTo(p)});
      objects.push(marker)
    }
 
@@ -443,8 +467,9 @@
 
             //var layer = kml.addTo(map);
 
-
-
+    //setTimeout(function(){
+    //  centerTo(L.latLng(61.1590017388236, 6.816887150207078))
+    //}, 1000);
 
    </script>
 
